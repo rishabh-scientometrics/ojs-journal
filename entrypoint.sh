@@ -10,4 +10,5 @@ if [ -f /usr/local/bin/pkp-prestart.sh ]; then
     /usr/local/bin/pkp-prestart.sh
 fi
 
+grep -A5 "\[database\]" /var/www/html/config.inc.php
 exec apache2-foreground
