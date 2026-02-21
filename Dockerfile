@@ -33,4 +33,7 @@ RUN mkdir -p /var/www/files /var/www/logs && \
     chmod -R 777 /var/www/files /var/www/logs /var/www/html/cache /var/www/html/public
 
 ENV HTTPS=on
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 EXPOSE 80
