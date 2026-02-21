@@ -1,24 +1,29 @@
-# Use the latest stable OJS 3.5 image
+# 1. Use the official stable OJS 3.5 image
 FROM pkpofficial/ojs:3_5_0-3
 
-# 1. Switch to root to install drivers
 USER root
 
-# 2. Update and install PostgreSQL drivers using apt-get (Ubuntu/Debian)
-# We also use docker-php-ext-install, which is the standard way to add PHP extensions in this image
-RUN apt-get update && apt-get install -y libpq-dev \
-    && docker-php-ext-install pdo pdo_pgsql pgsql \
+# 2. Install essential libraries and PostgreSQL drivers for Ubuntu
+RUN apt-get update && apt-get install -y \
+    libpq-dev libpng-dev libxml2-dev libzip-dev libonig-dev libicu-dev openssl \
+    && docker-php-ext-install pdo pdo_pgsql pgsql mbstring xml intl zip gd \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# 3. Maintain directory permissions for Render
-# Note: Ubuntu-based images often use 'www-data' instead of 'apache', 
-# but we will use 'www-data' here to ensure compatibility with the new base.
-RUN mkdir -p /var/www/files /var/www/logs /etc/ssl/apache2 && \
-    chown -R www-data:www-data /var/www/files /var/www/logs /etc/ssl/apache2 && \
-    chmod -R 777 /var/www/files /var/www/logs /etc/ssl/apache2
+# 3. Fix SSL warnings (required for Render's internal connection)
+RUN mkdir -p /etc/ssl/apache2 && \
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout /etc/ssl/apache2/server.key \
+    -out /etc/ssl/apache2/server.pem \
+    -subj "/CN=localhost" \
+    -addext "basicConstraints=CA:FALSE"
 
-# 4. Set environment variable for Render's HTTPS
+# 4. Set directory permissions for the web server
+RUN mkdir -p /var/www/files /var/www/logs && \
+    chown -R www-data:www-data /var/www/html /var/www/files /var/www/logs && \
+    chmod -R 777 /var/www/files /var/www/logs
+
+# 5. Environment settings
 ENV HTTPS=on
-
-# 5. Expose port 80
 EXPOSE 80
+
+# Keep as root so the startup script can launch services
