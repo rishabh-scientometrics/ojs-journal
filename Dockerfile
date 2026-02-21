@@ -1,5 +1,5 @@
 # Use the official OJS image
-FROM pkp/ojs:3_3_0-14
+FROM FROM pkpofficial/ojs:3_3_0-14
 
 # Set environment variables for the OJS installation
 ENV OJS_DB_TYPE=postgres
