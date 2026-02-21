@@ -1,4 +1,3 @@
-dockerfile 
 # Use the official OJS image
 FROM pkp/ojs:3_3_0-14
 
