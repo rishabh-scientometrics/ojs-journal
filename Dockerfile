@@ -25,7 +25,7 @@ RUN sed -i 's/display_errors = Off/display_errors = On/' /var/www/html/config.in
     sed -i 's/;display_errors = Off/display_errors = On/' /var/www/html/config.inc.php
 
 # Switch DB driver to pgsql (default in template is mysqli)
-RUN sed -i 's/driver = mysqli/driver = pgsql/' /var/www/html/config.inc.php
+RUN sed -i 's/driver = mysqli/driver = postgres/' /var/www/html/config.inc.php
 
 # Set permissions
 RUN mkdir -p /var/www/files /var/www/logs && \
