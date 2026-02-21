@@ -34,4 +34,3 @@ RUN mkdir -p /var/www/files /var/www/logs && \
 
 ENV HTTPS=on
 EXPOSE 80
-```
