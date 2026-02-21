@@ -5,4 +5,9 @@ sed -i "s/username = ojs/username = $OJS_DB_USER/" /var/www/html/config.inc.php
 sed -i "s/password = ojs/password = $OJS_DB_PASSWORD/" /var/www/html/config.inc.php
 sed -i "s/name = ojs/name = $OJS_DB_NAME/" /var/www/html/config.inc.php
 
-exec /bin/bash /opt/ojs/bin/ojs-start
+# Run PKP pre-start if it exists
+if [ -f /usr/local/bin/pkp-prestart.sh ]; then
+    /usr/local/bin/pkp-prestart.sh
+fi
+
+exec apache2-foreground
