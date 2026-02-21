@@ -35,22 +35,3 @@ RUN mkdir -p /var/www/files /var/www/logs && \
 ENV HTTPS=on
 EXPOSE 80
 ```
-
----
-
-Then in your **Render environment variables**, set these:
-
-| Key | Value |
-|-----|-------|
-| `SERVERNAME` | `ojs-journal-1.onrender.com` |
-| `OJS_DB_HOST` | your Render Postgres host |
-| `OJS_DB_USER` | your Render Postgres user |
-| `OJS_DB_PASSWORD` | your Render Postgres password |
-| `OJS_DB_NAME` | your Render Postgres DB name |
-| `PKP_CLI_INSTALL` | `0` (keep as 0, use web installer) |
-
----
-
-After deploying, visit:
-```
-https://ojs-journal-1.onrender.com/index.php/install
