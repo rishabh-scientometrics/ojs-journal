@@ -33,7 +33,6 @@ RUN mkdir -p /var/www/files /var/www/logs && \
     chmod -R 777 /var/www/files /var/www/logs /var/www/html/cache /var/www/html/public
 
 ENV HTTPS=on
-RUN find / -name "ojs-start" 2>/dev/null; find / -name "docker-entrypoint*" 2>/dev/null; find / -name "start*" -path "*/ojs/*" 2>/dev/null
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
