@@ -1,4 +1,3 @@
-dockerfile 
 # Update the version to 3.4.0-8 (or the latest stable)
 FROM pkpofficial/ojs:3_4_0-8
 
