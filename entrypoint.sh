@@ -5,4 +5,4 @@ sed -i "s/username = ojs/username = $OJS_DB_USER/" /var/www/html/config.inc.php
 sed -i "s/password = ojs/password = $OJS_DB_PASSWORD/" /var/www/html/config.inc.php
 sed -i "s/name = ojs/name = $OJS_DB_NAME/" /var/www/html/config.inc.php
 
-exec /usr/local/bin/ojs-start
+exec /bin/bash /opt/ojs/bin/ojs-start
