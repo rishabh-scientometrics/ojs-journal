@@ -24,7 +24,7 @@ RUN mkdir -p /var/www/files /var/www/logs && \
     chmod -R 777 /var/www/files /var/www/logs /var/www/html/cache /var/www/html/public
 
 # 5. DEBUG MODE: This will force OJS to show the error on the screen instead of a blank page
-RUN sed -i 's/display_errors = Off/display_errors = On/' /var/www/html/config.template.inc.php
+RUN sed -i 's/display_errors = Off/display_errors = On/' /var/www/html/config.TEMPLATE.inc.php
 
 ENV HTTPS=on
 EXPOSE 80
