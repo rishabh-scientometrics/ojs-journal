@@ -6,11 +6,15 @@ sed -i "s/password = ojs/password = FpgX7WWDWxhqRXnEg6E4QTVIxM1fBsuW/" /var/www/
 sed -i "/^\[database\]/,/^\[/ s/^name =.*/name = ojs_db/" /var/www/html/config.inc.php
 sed -i "s/installed = On/installed = Off/" /var/www/html/config.inc.php
 
+# Fix permissions before running installer
+chmod -R 777 /var/www/html/cache /var/www/html/public /var/www/files
+
+# Run CLI installer as www-data
 cd /var/www/html
-php tools/install.php \
+su -s /bin/bash www-data -c "php tools/install.php \
   --adminUsername=rishabhs03 \
-  --adminPassword=Punjab!101 \
-  --adminEmail=admin@example.com \
+  --adminPassword=Punjab-101 \
+  --adminEmail=rishabh.scientometrics@gmail.com \
   --locale=en \
   --country=IN \
   --dbDriver=postgres \
@@ -20,6 +24,8 @@ php tools/install.php \
   --dbUser=ojsuser \
   --dbPassword=FpgX7WWDWxhqRXnEg6E4QTVIxM1fBsuW \
   --filesDir=/var/www/files \
-  --noInteractive
+  --noInteractive"
+
+echo "=== Installer exit code: $? ==="
 
 exec apache2-foreground
