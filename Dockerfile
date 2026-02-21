@@ -1,21 +1,18 @@
-# Use the official OJS image
-FROM pkpofficial/ojs:3_3_0-14
+dockerfile 
+# Update the version to 3.4.0-8 (or the latest stable)
+FROM pkpofficial/ojs:3_4_0-8
 
-# 1. Switch to root to fix permissions and install drivers
 USER root
 
-# 2. Install PostgreSQL drivers (This fixes the [ PostgreSQL ] brackets)
-RUN apk add --no-cache php7-pgsql php7-pdo_pgsql
+# IMPORTANT: Newer OJS images use PHP 8.1 or 8.2. 
+# We update the 'apk add' to use the correct version for this image.
+RUN apk add --no-cache php81-pgsql php81-pdo_pgsql
 
-# 3. Create necessary directories and set correct permissions
+# Keep the permission fixes
 RUN mkdir -p /var/www/files /var/www/logs /etc/ssl/apache2 && \
     chown -R apache:apache /var/www/files /var/www/logs /etc/ssl/apache2 && \
     chmod -R 777 /var/www/files /var/www/logs /etc/ssl/apache2
 
-# 4. Fix internal script errors
 ENV HTTPS=on
 
-# 5. Expose the port (Keep this one)
 EXPOSE 80
-
-# We do NOT add "USER apache" here so the startup script can run as root
