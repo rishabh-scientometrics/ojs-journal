@@ -1,6 +1,6 @@
 #!/bin/bash
 
-chmod -R 777 /var/www/html/cache /var/www/html/public /var/www/files /var/www/html/config.inc.php
+chmod -R 777 /var/www/html/cache /var/www/html/public /var/www/files
 
 php -r "
 \$config = file_get_contents('/var/www/html/config.inc.php');
@@ -13,8 +13,21 @@ php -r "
 file_put_contents('/var/www/html/config.inc.php', \$config);
 "
 
+# Run installer using PHP's built-in input handling
 cd /var/www/html
-printf 'en\n\n/var/www/files\nadmin\nAdmin1234!\nAdmin1234!\nadmin@example.com\npostgres9\ndpg-d6d0m8ktgctc73es4c80-a\nojsuser\nFpgX7WWDWxhqRXnEg6E4QTVIxM1fBsuW\nojs_db\nn\n' | php tools/install.php 2>&1
+php tools/install.php \
+  --locale=en \
+  --additionalLocales= \
+  --filesDir=/var/www/files \
+  --adminUsername=admin \
+  --adminPassword=Admin1234! \
+  --adminEmail=admin@example.com \
+  --dbDriver=postgres9 \
+  --dbHost=dpg-d6d0m8ktgctc73es4c80-a \
+  --dbUsername=ojsuser \
+  --dbPassword=FpgX7WWDWxhqRXnEg6E4QTVIxM1fBsuW \
+  --dbName=ojs_db \
+  --noInteractive 2>&1
 
 echo "=== Installer exit code: $? ==="
 
