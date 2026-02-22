@@ -1,6 +1,9 @@
 #!/bin/bash
 
 chmod -R 777 /var/www/html/cache /var/www/html/public /var/www/files
+mkdir -p /var/www/html/cache/opcache
+chmod -R 777 /var/www/html/cache/opcache
+chown -R www-data:www-data /var/www/html/cache
 
 php -r "
 \$config = file_get_contents('/var/www/html/config.inc.php');
@@ -13,37 +16,20 @@ php -r "
 file_put_contents('/var/www/html/config.inc.php', \$config);
 "
 
-# Check if already installed
 TABLES=$(PGPASSWORD=FpgX7WWDWxhqRXnEg6E4QTVIxM1fBsuW psql -h dpg-d6d0m8ktgctc73es4c80-a -U ojsuser -d ojs_db -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' ')
-
 echo "=== Tables in DB: $TABLES ==="
 
 if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
-    echo "=== Running OJS installer ==="
+    echo "=== Installing via upgrade tool ==="
     cd /var/www/html
-    php -r "
-    define('INDEX_FILE_LOCATION', '/var/www/html/index.php');
-    \$_SERVER['HTTP_HOST'] = 'ojs-journal-1.onrender.com';
-    \$_SERVER['REQUEST_URI'] = '/index.php/install/install';
-    \$_SERVER['REQUEST_METHOD'] = 'POST';
-    \$_POST = [
-        'locale' => 'en',
-        'additionalLocales' => [],
-        'filesDir' => '/var/www/files',
-        'adminUsername' => 'admin',
-        'adminPassword' => 'Admin1234!',
-        'adminPassword2' => 'Admin1234!',
-        'adminEmail' => 'admin@example.com',
-        'databaseDriver' => 'postgres9',
-        'databaseHost' => 'dpg-d6d0m8ktgctc73es4c80-a',
-        'databaseUsername' => 'ojsuser',
-        'databasePassword' => 'FpgX7WWDWxhqRXnEg6E4QTVIxM1fBsuW',
-        'databaseName' => 'ojs_db',
-        'install' => '1',
-    ];
-    require('/var/www/html/index.php');
-    " 2>&1
-    echo "=== Install done ==="
+    su -s /bin/bash www-data -c "php tools/upgrade.php install" 2>&1
+    echo "=== Upgrade exit code: $? ==="
+
+    TABLES_AFTER=$(PGPASSWORD=FpgX7WWDWxhqRXnEg6E4QTVIxM1fBsuW psql -h dpg-d6d0m8ktgctc73es4c80-a -U ojsuser -d ojs_db -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' ')
+    echo "=== Tables after install: $TABLES_AFTER ==="
+fi
+
+exec apache2-foreground
 fi
 
 exec apache2-foreground
