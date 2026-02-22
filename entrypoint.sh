@@ -37,7 +37,7 @@ file_put_contents('/var/www/html/config.inc.php', \$config);
 grep -A12 "\[database\]" /var/www/html/config.inc.php
 
 cd /var/www/html
-printf 'en\n\n/var/www/files\nadmin\nAdmin1234!\nAdmin1234!\nadmin@example.com\npostgres9\ndpg-d6d0m8ktgctc73es4c80-a\n5432\nojs_db\nojsuser\nFpgX7WWDWxhqRXnEg6E4QTVIxM1fBsuW\n' | su -s /bin/bash www-data -c "php -d auto_prepend_file='' tools/install.php"
+printf 'en\n\n/var/www/files\nadmin\nAdmin1234!\nAdmin1234!\nadmin@example.com\npostgres9\ndpg-d6d0m8ktgctc73es4c80-a\nojsuser\nFpgX7WWDWxhqRXnEg6E4QTVIxM1fBsuW\nojs_db\nn\n' | su -s /bin/bash www-data -c "php -d auto_prepend_file='' tools/install.php"
 
 echo "=== Installer exit code: $? ==="
 
