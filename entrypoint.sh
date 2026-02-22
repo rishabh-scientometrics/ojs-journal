@@ -14,7 +14,7 @@ file_put_contents('/var/www/html/config.inc.php', \$config);
 "
 
 # Check if already installed
-TABLES=\$(PGPASSWORD=FpgX7WWDWxhqRXnEg6E4QTVIxM1fBsuW psql -h dpg-d6d0m8ktgctc73es4c80-a -U ojsuser -d ojs_db -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' ')
+TABLES=$(PGPASSWORD=FpgX7WWDWxhqRXnEg6E4QTVIxM1fBsuW psql -h dpg-d6d0m8ktgctc73es4c80-a -U ojsuser -d ojs_db -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' ')
 
 echo "=== Tables in DB: $TABLES ==="
 
