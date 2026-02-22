@@ -22,7 +22,7 @@ echo "=== Tables in DB: $TABLES ==="
 if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
     echo "=== Installing via upgrade tool ==="
     cd /var/www/html
-    su -s /bin/bash www-data -c "php tools/upgrade.php install" 2>&1
+    su -s /bin/bash www-data -c "php tools/upgrade.php upgrade" 2>&1
     echo "=== Upgrade exit code: $? ==="
 
     TABLES_AFTER=$(PGPASSWORD=FpgX7WWDWxhqRXnEg6E4QTVIxM1fBsuW psql -h dpg-d6d0m8ktgctc73es4c80-a -U ojsuser -d ojs_db -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' ')
