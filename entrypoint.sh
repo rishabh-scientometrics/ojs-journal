@@ -13,32 +13,8 @@ php -r "
 file_put_contents('/var/www/html/config.inc.php', \$config);
 "
 
-# Run installer using PHP's built-in input handling
-cd /var/www/html
-php tools/install.php \
-  --locale=en \
-  --additionalLocales= \
-  --filesDir=/var/www/files \
-  --adminUsername=admin \
-  --adminPassword=Admin1234! \
-  --adminEmail=admin@example.com \
-  --dbDriver=postgres9 \
-  --dbHost=dpg-d6d0m8ktgctc73es4c80-a \
-  --dbUsername=ojsuser \
-  --dbPassword=FpgX7WWDWxhqRXnEg6E4QTVIxM1fBsuW \
-  --dbName=ojs_db \
-  --noInteractive 2>&1
-
-echo "=== Installer exit code: $? ==="
-
-php -r "
-try {
-    \$pdo = new PDO('pgsql:host=dpg-d6d0m8ktgctc73es4c80-a;dbname=ojs_db', 'ojsuser', 'FpgX7WWDWxhqRXnEg6E4QTVIxM1fBsuW');
-    \$result = \$pdo->query(\"SELECT count(*) FROM information_schema.tables WHERE table_schema='public'\");
-    echo 'Tables in DB: ' . \$result->fetchColumn() . PHP_EOL;
-} catch(Exception \$e) {
-    echo 'DB check error: ' . \$e->getMessage() . PHP_EOL;
-}
-"
+# Find and run the postgres schema SQL directly
+echo "=== Looking for schema files ==="
+find /var/www/html -name "*.sql" | grep -i postgres | head -20
 
 exec apache2-foreground
