@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DB_HOST="mysql-production-d880.up.railway.app"
-DB_PORT="33060"
+DB_PORT="3306"
 DB_USER="root"
 DB_PASS="PHOouGKIDfOPVPZYkLfMZcggsjUxttsa"
 DB_NAME="railway"
