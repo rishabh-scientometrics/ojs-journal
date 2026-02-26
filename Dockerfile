@@ -9,6 +9,11 @@ RUN if [ -f /var/www/html/config.TEMPLATE.inc.php ]; then \
     cp /var/www/html/config.TEMPLATE.inc.php /var/www/html/config.inc.php; \
     fi
 
+# Disable SSL config that requires missing cert
+RUN a2dismod ssl 2>/dev/null || true && \
+    a2disconf pkp 2>/dev/null || true && \
+    rm -f /etc/apache2/conf-enabled/pkp.conf
+
 RUN mkdir -p /var/www/files /var/www/logs && \
     chown -R www-data:www-data /var/www/html /var/www/files /var/www/logs && \
     chmod -R 777 /var/www/files /var/www/logs /var/www/html/cache /var/www/html/public
