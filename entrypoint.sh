@@ -1,9 +1,9 @@
 #!/bin/bash
 
-DB_HOST="dpg-d6d0m8ktgctc73es4c80-a"
-DB_USER="ojsuser"
-DB_PASS="FpgX7WWDWxhqRXnEg6E4QTVIxM1fBsuW"
-DB_NAME="ojs_db"
+DB_HOST="dpg-d6iahrjuibrs73ekgr2g-a"
+DB_USER="ojs_database_user"
+DB_PASS="LcwV3769J87Ef1Jfx6I9uV4p3sS4B6fd"
+DB_NAME="ojs_database"
 
 chmod -R 777 /var/www/html/cache /var/www/html/public /var/www/files
 mkdir -p /var/www/html/cache/opcache
@@ -21,6 +21,9 @@ php -r "
 file_put_contents('/var/www/html/config.inc.php', \$config);
 echo 'Config written' . PHP_EOL;
 "
+
+echo '=== Config check ==='
+grep -E "^\s*(driver|host|username|password|name|installed)\s*=" /var/www/html/config.inc.php | grep -v '^;'
 
 TABLES=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c \
   "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' \n')
@@ -44,7 +47,7 @@ if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
       --data-urlencode "databaseUsername=${DB_USER}" \
       --data-urlencode "databasePassword=${DB_PASS}" \
       --data-urlencode "databaseName=${DB_NAME}" \
-      --data-urlencode "install=1" 2>&1 | tail -20
+      --data-urlencode "install=1" 2>&1 | tail -30
 
     TABLES_AFTER=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c \
       "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' \n')
