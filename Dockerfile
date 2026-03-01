@@ -2,17 +2,12 @@ FROM pkpofficial/ojs:3_5_0-3
 USER root
 
 RUN apt-get update && apt-get install -y \
-    default-mysql-client curl \
+    postgresql-client curl ssl-cert \
+    && make-ssl-cert generate-default-snakeoil \
+    && mkdir -p /etc/ssl/apache2 \
+    && ln -sf /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/ssl/apache2/server.pem \
+    && ln -sf /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/apache2/server.key \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-RUN if [ -f /var/www/html/config.TEMPLATE.inc.php ]; then \
-    cp /var/www/html/config.TEMPLATE.inc.php /var/www/html/config.inc.php; \
-    fi
-
-# Disable SSL config that requires missing cert
-RUN a2dismod ssl 2>/dev/null || true && \
-    a2disconf pkp 2>/dev/null || true && \
-    rm -f /etc/apache2/conf-enabled/pkp.conf
 
 RUN mkdir -p /var/www/files /var/www/logs && \
     chown -R www-data:www-data /var/www/html /var/www/files /var/www/logs && \
