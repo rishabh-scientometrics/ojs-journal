@@ -12,12 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - name: Create app if not exists
-        run: flyctl apps create ojs-journal --org personal || true
+      - name: Create app
+        run: |
+          flyctl apps create ojs-journal --org personal
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-      - name: Create volume if not exists
-        run: flyctl volumes create ojs_files --region sin --size 1 --app ojs-journal --yes || true
+      - name: Create volume
+        run: |
+          flyctl volumes create ojs_files --region sin --size 1 --app ojs-journal --yes
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       - name: Deploy
