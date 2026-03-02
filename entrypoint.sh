@@ -19,14 +19,9 @@ echo "=== PKPPageRouter lines 470-490 ==="
 sed -n '470,490p' /var/www/html/lib/pkp/classes/core/PKPPageRouter.php
 
 if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
-    # Run installer in background after Apache starts
     (
         sleep 15
-        echo "=== PKPPageRouter lines 470-485 ==="
-        sed -n '470,485p' /var/www/html/lib/pkp/classes/core/PKPPageRouter.php
-        echo "=== POSTing to installer ==="
-        echo "=== PKPPageRouter around line 477 ==="
-        sed -n '473,483p' /var/www/html/lib/pkp/classes/core/PKPPageRouter.php        
+        echo "=== POSTing to installer ===" >> /tmp/install.log 2>&1
         curl -s -X POST "http://localhost/index.php/install/install" \
           --data-urlencode "locale=en" \
           --data-urlencode "filesDir=/var/www/files" \
@@ -39,10 +34,11 @@ if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
           --data-urlencode "databaseUsername=${DB_USER}" \
           --data-urlencode "databasePassword=${DB_PASS}" \
           --data-urlencode "databaseName=${DB_NAME}" \
-          --data-urlencode "install=1"
-        echo "=== Installer done ==="
+          --data-urlencode "install=1" >> /tmp/install.log 2>&1
+        echo "=== Done ===" >> /tmp/install.log 2>&1
         TABLES_AFTER=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' \n')
-        echo "=== Tables after: $TABLES_AFTER ==="
+        echo "=== Tables after: $TABLES_AFTER ===" >> /tmp/install.log 2>&1
+        cat /tmp/install.log
         tail -20 /var/log/apache2/error.log
     ) &
 fi
