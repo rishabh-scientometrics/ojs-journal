@@ -5,23 +5,16 @@ RUN apt-get update && apt-get install -y \
     postgresql-client curl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Disable SSL completely
 RUN a2dismod ssl 2>/dev/null || true && \
     a2dissite default-ssl 2>/dev/null || true && \
     rm -f /etc/apache2/conf-enabled/pkp.conf && \
     rm -f /etc/apache2/sites-enabled/*ssl* 2>/dev/null || true
 
-# Patch PKPRouter line 201
 RUN sed -i 's/\$this->_context = \$contextDao->getByPath(\$path);/try { \$this->_context = \$contextDao->getByPath(\$path); } catch (\\Exception \$e) { \$this->_context = null; }/' \
     /var/www/html/lib/pkp/classes/core/PKPRouter.php
 
-# Patch PKPRouter line 205 - remove the NotFoundHttpException throw
 RUN sed -i 's/throw new \\Symfony\\Component\\HttpKernel\\Exception\\NotFoundHttpException();//' \
     /var/www/html/lib/pkp/classes/core/PKPRouter.php
-
-# Patch PKPPageRouter line 477
-RUN sed -i '477s/.*/try { $contextPath = $request->getRequestedContextPath(); $context = $contextDAO->getByPath($contextPath); } catch (\\Exception $e) { $context = null; }/' \
-    /var/www/html/lib/pkp/classes/core/PKPPageRouter.php 2>/dev/null || true    
 
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
