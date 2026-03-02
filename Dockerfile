@@ -2,12 +2,15 @@ FROM pkpofficial/ojs:3_5_0-3
 USER root
 
 RUN apt-get update && apt-get install -y \
-    postgresql-client curl ssl-cert \
-    && make-ssl-cert generate-default-snakeoil \
-    && mkdir -p /etc/ssl/apache2 \
-    && cp /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/ssl/apache2/server.pem \
-    && cp /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/apache2/server.key \
+    postgresql-client curl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Disable SSL completely
+RUN a2dismod ssl 2>/dev/null || true && \
+    a2dissite default-ssl 2>/dev/null || true && \
+    rm -f /etc/apache2/conf-enabled/pkp.conf && \
+    rm -f /etc/apache2/sites-enabled/*ssl* && \
+    rm -f /etc/apache2/sites-enabled/*443*
 
 # Patch PKPRouter to catch DB errors during install
 RUN sed -i 's/\$context = \$contextDAO->getByPath(\$contextPath);/try { \$context = \$contextDAO->getByPath(\$contextPath); } catch (\\Exception \$e) { \$context = null; }/' \
