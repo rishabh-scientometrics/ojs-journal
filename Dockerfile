@@ -5,15 +5,14 @@ RUN apt-get update && apt-get install -y \
     postgresql-client curl ssl-cert \
     && make-ssl-cert generate-default-snakeoil \
     && mkdir -p /etc/ssl/apache2 \
-    && ln -sf /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/ssl/apache2/server.pem \
-    && ln -sf /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/apache2/server.key \
+    && cp /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/ssl/apache2/server.pem \
+    && cp /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/apache2/server.key \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Patch PKPRouter to catch DB errors during install
 RUN sed -i 's/\$context = \$contextDAO->getByPath(\$contextPath);/try { \$context = \$contextDAO->getByPath(\$contextPath); } catch (\\Exception \$e) { \$context = null; }/' \
     /var/www/html/lib/pkp/classes/core/PKPRouter.php
 
-# Fix Apache ServerName warning
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 RUN mkdir -p /var/www/files /var/www/logs && \
