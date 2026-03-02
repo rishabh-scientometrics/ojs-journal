@@ -19,18 +19,8 @@ RUN sed -i 's/throw new \\Symfony\\Component\\HttpKernel\\Exception\\NotFoundHtt
 RUN sed -i 's/Application::getContextDAO()->getByPath(\$contextPath)/@Application::getContextDAO()->getByPath(\$contextPath)/g' \
     /var/www/html/lib/pkp/classes/core/PKPPageRouter.php
 
-# Patch isInstalled to always return false using a PHP script
-RUN php -r "
-\$file = '/var/www/html/lib/pkp/classes/core/PKPApplication.php';
-\$content = file_get_contents(\$file);
-\$content = preg_replace(
-    '/public static function isInstalled\(\).*?\{.*?return.*?;.*?\}/s',
-    'public static function isInstalled(): bool { return false; }',
-    \$content
-);
-file_put_contents(\$file, \$content);
-echo 'isInstalled patched' . PHP_EOL;
-"
+COPY patch.php /tmp/patch.php
+RUN php /tmp/patch.php
 
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
