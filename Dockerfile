@@ -19,6 +19,10 @@ RUN sed -i 's/\$this->_context = \$contextDao->getByPath(\$path);/try { \$this->
 RUN sed -i 's/throw new \\Symfony\\Component\\HttpKernel\\Exception\\NotFoundHttpException();//' \
     /var/www/html/lib/pkp/classes/core/PKPRouter.php
 
+# Patch PKPPageRouter line 477
+RUN sed -i '477s/.*/try { $contextPath = $request->getRequestedContextPath(); $context = $contextDAO->getByPath($contextPath); } catch (\\Exception $e) { $context = null; }/' \
+    /var/www/html/lib/pkp/classes/core/PKPPageRouter.php 2>/dev/null || true    
+
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 RUN mkdir -p /var/www/files /var/www/logs && \
