@@ -20,6 +20,8 @@ if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
     (
         sleep 15
         echo "=== POSTing to installer ==="
+        echo "=== PKPPageRouter around line 477 ==="
+        sed -n '473,483p' /var/www/html/lib/pkp/classes/core/PKPPageRouter.php        
         curl -s -X POST "http://localhost/index.php/install/install" \
           --data-urlencode "locale=en" \
           --data-urlencode "filesDir=/var/www/files" \
