@@ -19,6 +19,9 @@ RUN sed -i 's/throw new \\Symfony\\Component\\HttpKernel\\Exception\\NotFoundHtt
 # Patch PKPPageRouter - wrap getByPath in try/catch
 RUN sed -i 's/Application::getContextDAO()->getByPath(\$contextPath)/@Application::getContextDAO()->getByPath(\$contextPath)/g' \
     /var/www/html/lib/pkp/classes/core/PKPPageRouter.php
+
+RUN sed -i "s/public static function isInstalled.*$/public static function isInstalled(): bool { return false; }/" \
+    /var/www/html/lib/pkp/classes/core/PKPApplication.php 2>/dev/null || true
     
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
