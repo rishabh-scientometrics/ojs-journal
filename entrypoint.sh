@@ -22,23 +22,20 @@ file_put_contents('/var/www/html/config.inc.php', \$config);
 echo 'Config written' . PHP_EOL;
 "
 
-echo '=== Config check ==='
-grep -E "^\s*(driver|host|username|password|name|installed)\s*=" /var/www/html/config.inc.php | grep -v '^;'
-
-echo '=== PKPRouter patches ==='
-sed -n '198,210p' /var/www/html/lib/pkp/classes/core/PKPRouter.php
-
 TABLES=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c \
   "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' \n')
 echo "=== Tables in DB: $TABLES ==="
 
 if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
-    echo "=== Starting Apache for web install ==="
+    echo "=== Starting Apache on port 8081 for install ==="
+    # Temporarily change Apache to listen on 8081
+    sed -i 's/Listen 80/Listen 8081/' /etc/apache2/ports.conf
+    sed -i 's/<VirtualHost \*:80>/<VirtualHost *:8081>/' /etc/apache2/sites-enabled/*.conf 2>/dev/null || true
     apache2ctl start
-    sleep 10
+    sleep 8
 
     echo "=== POSTing to web installer ==="
-    curl -v -X POST "http://localhost/index.php/install/install" \
+    curl -v -X POST "http://localhost:8081/index.php/install/install" \
       --data-urlencode "locale=en" \
       --data-urlencode "filesDir=/var/www/files" \
       --data-urlencode "adminUsername=admin" \
@@ -58,6 +55,8 @@ if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
     TABLES_AFTER=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c \
       "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' \n')
     echo "=== Tables after install: $TABLES_AFTER ==="
-fi
 
-exec apache2ctl -DFOREGROUND
+    # Switch back to port 80
+    apache2ctl stop
+    sleep 2
+    sed -i 's/Listen 8081/Listen 80/' /etc/apache2/ports.
