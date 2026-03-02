@@ -47,7 +47,7 @@ if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
       --data-urlencode "databaseUsername=${DB_USER}" \
       --data-urlencode "databasePassword=${DB_PASS}" \
       --data-urlencode "databaseName=${DB_NAME}" \
-      --data-urlencode "install=1" 2>&1 | tail -30
+      --data-urlencode "install=1" 2>&1 | tail -50
 
     TABLES_AFTER=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c \
       "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' \n')
