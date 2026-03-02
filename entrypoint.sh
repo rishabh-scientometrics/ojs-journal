@@ -19,6 +19,8 @@ if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
     # Run installer in background after Apache starts
     (
         sleep 15
+        echo "=== PKPPageRouter lines 470-485 ==="
+        sed -n '470,485p' /var/www/html/lib/pkp/classes/core/PKPPageRouter.php
         echo "=== POSTing to installer ==="
         echo "=== PKPPageRouter around line 477 ==="
         sed -n '473,483p' /var/www/html/lib/pkp/classes/core/PKPPageRouter.php        
