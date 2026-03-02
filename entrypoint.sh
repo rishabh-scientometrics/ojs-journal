@@ -33,6 +33,11 @@ if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
     echo "=== Starting Apache for web install ==="
     apache2ctl start
     sleep 10
+    echo "=== PKPRouter patch check ==="
+    grep -n "getByPath" /var/www/html/lib/pkp/classes/core/PKPRouter.php | head -10
+    echo "=== PHP error log ==="
+    tail -20 /var/log/apache2/error.log
+
 
     echo "=== POSTing to web installer ==="
     curl -v -X POST "http://localhost/index.php/install/install" \
