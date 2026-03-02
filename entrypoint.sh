@@ -30,17 +30,17 @@ TABLES=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c \
 echo "=== Tables in DB: $TABLES ==="
 
 if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
-    echo "=== Starting Apache for web install ==="
-    apache2ctl start
-    sleep 10
-    echo "=== PKPRouter patch check ==="
-    grep -n "getByPath" /var/www/html/lib/pkp/classes/core/PKPRouter.php | head -10
-    echo "=== PHP error log ==="
-    tail -30 /var/log/apache2/error.log
+    echo "=== Starting PHP built-in server on port 8080 for install ==="
+    cd /var/www/html
+    php -S 0.0.0.0:8080 -t /var/www/html &
+    PHP_PID=$!
+    sleep 5
 
+    echo "=== PKPRouter patch check ==="
+    grep -n "getByPath" /var/www/html/lib/pkp/classes/core/PKPRouter.php | head -5
 
     echo "=== POSTing to web installer ==="
-    curl -v -X POST "http://localhost/index.php/install/install" \
+    curl -v -X POST "http://localhost:8080/index.php/install/install" \
       --data-urlencode "locale=en" \
       --data-urlencode "filesDir=/var/www/files" \
       --data-urlencode "adminUsername=admin" \
@@ -53,6 +53,8 @@ if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
       --data-urlencode "databasePassword=${DB_PASS}" \
       --data-urlencode "databaseName=${DB_NAME}" \
       --data-urlencode "install=1" 2>&1 | tail -50
+
+    kill $PHP_PID 2>/dev/null
 
     TABLES_AFTER=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c \
       "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' \n')
