@@ -15,7 +15,11 @@ RUN sed -i 's/\$this->_context = \$contextDao->getByPath(\$path);/try { \$this->
 
 RUN sed -i 's/throw new \\Symfony\\Component\\HttpKernel\\Exception\\NotFoundHttpException();//' \
     /var/www/html/lib/pkp/classes/core/PKPRouter.php
-
+    
+# Patch PKPPageRouter - wrap getByPath in try/catch
+RUN sed -i 's/: Application::getContextDAO()->getByPath(\$contextPath))/: (function() use (\$contextPath) { try { return Application::getContextDAO()->getByPath(\$contextPath); } catch (\\Exception \$e) { return null; } })()/g' \
+    /var/www/html/lib/pkp/classes/core/PKPPageRouter.php
+    
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 RUN mkdir -p /var/www/files /var/www/logs && \
