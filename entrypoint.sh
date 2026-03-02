@@ -15,14 +15,12 @@ php -r "\$config = file_get_contents('/var/www/html/config.inc.php'); \$config =
 TABLES=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' \n')
 echo "=== Tables in DB: $TABLES ==="
 
-echo "=== isInstalled method ==="
-grep -n "isInstalled" /var/www/html/lib/pkp/classes/core/PKPApplication.php | head -5
-
 if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
     (
-        sleep 15
-        curl -v "http://localhost/index.php/install/install" >> /tmp/install.log 2>&1
-        echo "=== POSTing to installer ===" >> /tmp/install.log 2>&1
+        sleep 20
+        echo "=== GET install page ==="
+        curl -s "http://localhost/index.php/install/install" | tail -30
+        echo "=== POST to installer ==="
         curl -s -X POST "http://localhost/index.php/install/install" \
           --data-urlencode "locale=en" \
           --data-urlencode "filesDir=/var/www/files" \
@@ -35,13 +33,12 @@ if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
           --data-urlencode "databaseUsername=${DB_USER}" \
           --data-urlencode "databasePassword=${DB_PASS}" \
           --data-urlencode "databaseName=${DB_NAME}" \
-          --data-urlencode "install=1" >> /tmp/install.log 2>&1
-        echo "=== Done ===" >> /tmp/install.log 2>&1
-        TABLES_AFTER=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' \n')
-        echo "=== Tables after: $TABLES_AFTER ===" >> /tmp/install.log 2>&1
-        cat /tmp/install.log
+          --data-urlencode "install=1" | tail -30
+        echo "=== Apache errors ==="
         tail -20 /var/log/apache2/error.log
-    ) &
+        TABLES_AFTER=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' \n')
+        echo "=== Tables after: $TABLES_AFTER ==="
+    ) 1>/proc/1/fd/1 2>/proc/1/fd/2 &
 fi
 
 exec apache2ctl -DFOREGROUND
