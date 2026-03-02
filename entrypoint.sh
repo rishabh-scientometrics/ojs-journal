@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DB_HOST="dpg-d6iahrjuibrs73ekgr2g-a"
+DB_HOST="dpg-d6iahrjuibrs73ekgr2g-a.singapore-postgres.render.com"
 DB_USER="ojs_database_user"
 DB_PASS="LcwV3769J87Ef1Jfx6I9uV4p3sS4B6fd"
 DB_NAME="ojs_database"
@@ -35,7 +35,7 @@ if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
     sleep 10
 
     echo "=== POSTing to web installer ==="
-    curl -s -X POST "http://localhost/index.php/install/install" \
+    curl -v -X POST "http://localhost/index.php/install/install" \
       --data-urlencode "locale=en" \
       --data-urlencode "filesDir=/var/www/files" \
       --data-urlencode "adminUsername=admin" \
