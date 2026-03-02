@@ -21,6 +21,7 @@ grep -n "isInstalled" /var/www/html/lib/pkp/classes/core/PKPApplication.php | he
 if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
     (
         sleep 15
+        curl -v "http://localhost/index.php/install/install" >> /tmp/install.log 2>&1
         echo "=== POSTing to installer ===" >> /tmp/install.log 2>&1
         curl -s -X POST "http://localhost/index.php/install/install" \
           --data-urlencode "locale=en" \
