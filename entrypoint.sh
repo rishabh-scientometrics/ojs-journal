@@ -15,8 +15,8 @@ php -r "\$config = file_get_contents('/var/www/html/config.inc.php'); \$config =
 TABLES=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' \n')
 echo "=== Tables in DB: $TABLES ==="
 
-echo "=== PKPPageRouter lines 470-490 ==="
-sed -n '470,490p' /var/www/html/lib/pkp/classes/core/PKPPageRouter.php
+echo "=== isInstalled method ==="
+grep -n "isInstalled" /var/www/html/lib/pkp/classes/core/PKPApplication.php | head -5
 
 if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
     (
