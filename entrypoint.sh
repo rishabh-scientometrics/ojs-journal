@@ -16,30 +16,28 @@ TABLES=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c "SEL
 echo "=== Tables in DB: $TABLES ==="
 
 if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
-    echo "=== Starting Apache on port 80 ==="
-    apache2ctl start
-    sleep 8
-
-    echo "=== POSTing to installer ==="
-    curl -s -X POST "http://localhost/index.php/install/install" \
-      --data-urlencode "locale=en" \
-      --data-urlencode "filesDir=/var/www/files" \
-      --data-urlencode "adminUsername=admin" \
-      --data-urlencode "adminPassword=Admin1234!" \
-      --data-urlencode "adminPassword2=Admin1234!" \
-      --data-urlencode "adminEmail=admin@example.com" \
-      --data-urlencode "databaseDriver=postgres9" \
-      --data-urlencode "databaseHost=${DB_HOST}" \
-      --data-urlencode "databaseUsername=${DB_USER}" \
-      --data-urlencode "databasePassword=${DB_PASS}" \
-      --data-urlencode "databaseName=${DB_NAME}" \
-      --data-urlencode "install=1" 2>&1 | tail -50
-
-    echo "=== Error log ==="
-    tail -30 /var/log/apache2/error.log
-
-    TABLES_AFTER=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' \n')
-    echo "=== Tables after: $TABLES_AFTER ==="
+    # Run installer in background after Apache starts
+    (
+        sleep 15
+        echo "=== POSTing to installer ==="
+        curl -s -X POST "http://localhost/index.php/install/install" \
+          --data-urlencode "locale=en" \
+          --data-urlencode "filesDir=/var/www/files" \
+          --data-urlencode "adminUsername=admin" \
+          --data-urlencode "adminPassword=Admin1234!" \
+          --data-urlencode "adminPassword2=Admin1234!" \
+          --data-urlencode "adminEmail=admin@example.com" \
+          --data-urlencode "databaseDriver=postgres9" \
+          --data-urlencode "databaseHost=${DB_HOST}" \
+          --data-urlencode "databaseUsername=${DB_USER}" \
+          --data-urlencode "databasePassword=${DB_PASS}" \
+          --data-urlencode "databaseName=${DB_NAME}" \
+          --data-urlencode "install=1"
+        echo "=== Installer done ==="
+        TABLES_AFTER=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' \n')
+        echo "=== Tables after: $TABLES_AFTER ==="
+        tail -20 /var/log/apache2/error.log
+    ) &
 fi
 
 exec apache2ctl -DFOREGROUND
