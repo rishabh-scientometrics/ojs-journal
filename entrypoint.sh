@@ -16,14 +16,12 @@ TABLES=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c "SEL
 echo "=== Tables in DB: $TABLES ==="
 
 if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
-    echo "=== Switching Apache to port 8081 ==="
-    sed -i 's/Listen 80/Listen 8081/' /etc/apache2/ports.conf
-    sed -i 's/<VirtualHost \*:80>/<VirtualHost *:8081>/' /etc/apache2/sites-enabled/000-default.conf
+    echo "=== Starting Apache on port 80 ==="
     apache2ctl start
     sleep 8
 
     echo "=== POSTing to installer ==="
-    curl -s -X POST "http://localhost:8081/index.php/install/install" \
+    curl -s -X POST "http://localhost/index.php/install/install" \
       --data-urlencode "locale=en" \
       --data-urlencode "filesDir=/var/www/files" \
       --data-urlencode "adminUsername=admin" \
@@ -38,15 +36,10 @@ if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
       --data-urlencode "install=1" 2>&1 | tail -50
 
     echo "=== Error log ==="
-    tail -20 /var/log/apache2/error.log
+    tail -30 /var/log/apache2/error.log
 
     TABLES_AFTER=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' \n')
     echo "=== Tables after: $TABLES_AFTER ==="
-
-    apache2ctl stop
-    sleep 2
-    sed -i 's/Listen 8081/Listen 80/' /etc/apache2/ports.conf
-    sed -i 's/<VirtualHost \*:8081>/<VirtualHost *:80>/' /etc/apache2/sites-enabled/000-default.conf
 fi
 
 exec apache2ctl -DFOREGROUND
