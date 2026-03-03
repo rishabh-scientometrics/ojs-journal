@@ -15,30 +15,11 @@ php -r "\$config = file_get_contents('/var/www/html/config.inc.php'); \$config =
 TABLES=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' \n')
 echo "=== Tables in DB: $TABLES ==="
 
-if [ "$TABLES" = "0" ] || [ -z "$TABLES" ]; then
-    (
-        sleep 20
-        echo "=== GET install page ==="
-        curl -s "http://localhost/index.php/install/install" | tail -30
-        echo "=== POST to installer ==="
-        curl -s -X POST "http://localhost/index.php/install/install" \
-          --data-urlencode "locale=en" \
-          --data-urlencode "filesDir=/var/www/files" \
-          --data-urlencode "adminUsername=admin" \
-          --data-urlencode "adminPassword=Admin1234!" \
-          --data-urlencode "adminPassword2=Admin1234!" \
-          --data-urlencode "adminEmail=admin@example.com" \
-          --data-urlencode "databaseDriver=postgres9" \
-          --data-urlencode "databaseHost=${DB_HOST}" \
-          --data-urlencode "databaseUsername=${DB_USER}" \
-          --data-urlencode "databasePassword=${DB_PASS}" \
-          --data-urlencode "databaseName=${DB_NAME}" \
-          --data-urlencode "install=1" | tail -30
-        echo "=== Apache errors ==="
-        tail -20 /var/log/apache2/error.log
-        TABLES_AFTER=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' \n')
-        echo "=== Tables after: $TABLES_AFTER ==="
-    ) 1>/proc/1/fd/1 2>/proc/1/fd/2 &
-fi
+# Enable PHP error display in Apache
+echo "php_flag display_errors on" >> /etc/apache2/sites-enabled/000-default.conf
+echo "php_value error_reporting 32767" >> /etc/apache2/sites-enabled/000-default.conf
+
+# Tail Apache error log to stdout in background
+tail -f /var/log/apache2/error.log &
 
 exec apache2ctl -DFOREGROUND
