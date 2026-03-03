@@ -15,11 +15,8 @@ php -r "\$config = file_get_contents('/var/www/html/config.inc.php'); \$config =
 TABLES=$(PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public';" 2>/dev/null | tr -d ' \n')
 echo "=== Tables in DB: $TABLES ==="
 
-# Enable PHP error display in Apache
-echo "php_flag display_errors on" >> /etc/apache2/sites-enabled/000-default.conf
-echo "php_value error_reporting 32767" >> /etc/apache2/sites-enabled/000-default.conf
-
-# Tail Apache error log to stdout in background
-tail -f /var/log/apache2/error.log &
+# Redirect Apache logs to stdout
+ln -sf /proc/1/fd/1 /var/log/apache2/access.log
+ln -sf /proc/1/fd/1 /var/log/apache2/error.log
 
 exec apache2ctl -DFOREGROUND
