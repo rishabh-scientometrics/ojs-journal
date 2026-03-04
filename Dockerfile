@@ -32,6 +32,10 @@ RUN sed -i 's/^installed[ ]*=[ ]*.*/installed = On/' /var/www/html/config.inc.ph
 RUN APP_KEY=$(php -r "echo base64_encode(random_bytes(32));") && \
     sed -i "s|^app_key\s*=.*|app_key = base64:${APP_KEY}|" /var/www/html/config.inc.php
 RUN grep -E "^(installed|driver|host|username|password|name|base_url|app_key)" /var/www/html/config.inc.php | grep -v "^;" | head -10
+RUN chmod -R 777 /var/www/html/cache /var/www/html/public && \
+    mkdir -p /var/www/files && chmod -R 777 /var/www/files
+RUN rm -rf /var/www/html/plugins/importexport/doaj
+
 RUN mkdir -p /var/www/files /var/www/logs && \
     chown -R www-data:www-data /var/www/html /var/www/files /var/www/logs && \
     chmod -R 777 /var/www/files /var/www/logs /var/www/html/cache /var/www/html/public
