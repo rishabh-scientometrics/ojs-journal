@@ -1,6 +1,6 @@
 FROM pkpofficial/ojs:3_5_0-3
 USER root
-RUN echo "cache-bust-3" > /dev/null
+RUN echo "cache-bust-4" > /dev/null
 RUN apt-get update && apt-get install -y \
     postgresql-client curl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -14,6 +14,9 @@ RUN sed -i 's/throw new \\Symfony\\Component\\HttpKernel\\Exception\\NotFoundHtt
     /var/www/html/lib/pkp/classes/core/PKPRouter.php
 RUN sed -i 's/Application::getContextDAO()->getByPath(\$contextPath)/@Application::getContextDAO()->getByPath(\$contextPath)/g' \
     /var/www/html/lib/pkp/classes/core/PKPPageRouter.php
+# Fix DOAJ reference in PubObjectsExportPlugin
+RUN sed -i 's/.*DOAJInfoSender.*//' /var/www/html/classes/plugins/PubObjectsExportPlugin.php
+RUN rm -rf /var/www/html/plugins/importexport/doaj
 COPY patch.php /tmp/patch.php
 RUN php /tmp/patch.php
 RUN find /etc/php -name "php.ini" | xargs -I{} sh -c 'echo "error_log = /dev/stdout" >> "{}" && echo "display_errors = On" >> "{}" && echo "log_errors = On" >> "{}"'
@@ -27,15 +30,9 @@ RUN sed -i 's/^installed[ ]*=[ ]*.*/installed = On/' /var/www/html/config.inc.ph
     sed -i 's/^username[ ]*=[ ]*.*/username = ojs_database_gu3v_user/' /var/www/html/config.inc.php && \
     sed -i 's/^password[ ]*=[ ]*.*/password = ysqnHiL5VbSpz9aFKcDvL7shwVvHs1v1/' /var/www/html/config.inc.php && \
     sed -i 's/^name[ ]*=[ ]*.*/name = ojs_database_gu3v/' /var/www/html/config.inc.php && \
-    sed -i 's|^base_url[ ]*=[ ]*.*|base_url = https://ojs-journal-2.onrender.com|' /var/www/html/config.inc.php
-# Generate and set app_key
-RUN APP_KEY=$(php -r "echo base64_encode(random_bytes(32));") && \
-    sed -i "s|^app_key\s*=.*|app_key = base64:${APP_KEY}|" /var/www/html/config.inc.php
-RUN grep -E "^(installed|driver|host|username|password|name|base_url|app_key)" /var/www/html/config.inc.php | grep -v "^;" | head -10
-RUN chmod -R 777 /var/www/html/cache /var/www/html/public && \
-    mkdir -p /var/www/files && chmod -R 777 /var/www/files
-RUN rm -rf /var/www/html/plugins/importexport/doaj
-
+    sed -i 's|^base_url[ ]*=[ ]*.*|base_url = https://ojs-journal-2.onrender.com|' /var/www/html/config.inc.php && \
+    sed -i 's|^app_key\s*=.*|app_key = base64:kPOGmSHBaJ8Xw3zFqY9nRdVeT2uL5cI7|' /var/www/html/config.inc.php
+RUN grep -E "^(installed|driver|host|username|name|base_url|app_key)" /var/www/html/config.inc.php | grep -v "^;" | head -10
 RUN mkdir -p /var/www/files /var/www/logs && \
     chown -R www-data:www-data /var/www/html /var/www/files /var/www/logs && \
     chmod -R 777 /var/www/files /var/www/logs /var/www/html/cache /var/www/html/public
@@ -47,11 +44,6 @@ chown -R www-data:www-data /var/www/html/cache\n\
 rm -rf /var/www/html/cache/*\n\
 JOURNALS=$(PGPASSWORD=ysqnHiL5VbSpz9aFKcDvL7shwVvHs1v1 psql -h dpg-d6k4h4haae7s7389lqlg-a.singapore-postgres.render.com -U ojs_database_gu3v_user -d ojs_database_gu3v -t -c "SELECT count(*) FROM journals;" 2>/dev/null | tr -d '"'"' \n'"'"')\n\
 echo "=== Journals in DB: $JOURNALS ==="\n\
-if [ "$JOURNALS" = "0" ]; then\n\
-echo "=== Creating journal ==="\n\
-PGPASSWORD=ysqnHiL5VbSpz9aFKcDvL7shwVvHs1v1 psql -h dpg-d6k4h4haae7s7389lqlg-a.singapore-postgres.render.com -U ojs_database_gu3v_user -d ojs_database_gu3v -c "INSERT INTO journals (path, seq, primary_locale, enabled) VALUES ('"'"'journal'"'"', 1, '"'"'en'"'"', 1) ON CONFLICT DO NOTHING; INSERT INTO journal_settings (journal_id, locale, setting_name, setting_value) VALUES (1, '"'"''"'"', '"'"'name'"'"', '"'"'My Journal'"'"') ON CONFLICT DO NOTHING; INSERT INTO journal_settings (journal_id, locale, setting_name, setting_value) VALUES (1, '"'"'en'"'"', '"'"'name'"'"', '"'"'My Journal'"'"') ON CONFLICT DO NOTHING;" 2>/dev/null\n\PGPASSWORD=ysqnHiL5VbSpz9aFKcDvL7shwVvHs1v1 psql -h dpg-d6k4h4haae7s7389lqlg-a.singapore-postgres.render.com -U ojs_database_gu3v_user -d ojs_database_gu3v -c "INSERT INTO journals (path, seq, primary_locale, enabled) VALUES ('"'"'journal'"'"', 1, '"'"'en'"'"', 1) ON CONFLICT DO NOTHING; INSERT INTO journal_settings (journal_id, locale, setting_name, setting_value) VALUES (1, '"'"''"'"', '"'"'name'"'"', '"'"'My Journal'"'"') ON CONFLICT DO NOTHING; INSERT INTO journal_settings (journal_id, locale, setting_name, setting_value) VALUES (1, '"'"'en'"'"', '"'"'name'"'"', '"'"'My Journal'"'"') ON CONFLICT DO NOTHING;" 2>/dev/null\n\PGPASSWORD=ysqnHiL5VbSpz9aFKcDvL7shwVvHs1v1 psql -h dpg-d6k4h4haae7s7389lqlg-a.singapore-postgres.render.com -U ojs_database_gu3v_user -d ojs_database_gu3v -c "INSERT INTO journals (path, seq, primary_locale, enabled) VALUES ('"'"'journal'"'"', 1, '"'"'en'"'"', 1) ON CONFLICT DO NOTHING; INSERT INTO journal_settings (journal_id, locale, setting_name, setting_value) VALUES (1, '"'"''"'"', '"'"'name'"'"', '"'"'My Journal'"'"') ON CONFLICT DO NOTHING; INSERT INTO journal_settings (journal_id, locale, setting_name, setting_value) VALUES (1, '"'"'en'"'"', '"'"'name'"'"', '"'"'My Journal'"'"') ON CONFLICT DO NOTHING;" 2>/dev/null\n\
-echo "=== Journal created ==="\n\
-fi\n\
 exec apache2ctl -DFOREGROUND\n\
 ' > /entrypoint.sh && chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
