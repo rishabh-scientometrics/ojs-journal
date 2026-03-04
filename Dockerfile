@@ -1,6 +1,6 @@
 FROM pkpofficial/ojs:3_5_0-3
 USER root
-RUN echo "cache-bust-1" > /dev/null
+RUN echo "cache-bust-2" > /dev/null
 
 RUN apt-get update && apt-get install -y \
     postgresql-client curl \
