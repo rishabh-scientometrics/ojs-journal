@@ -20,6 +20,12 @@ RUN sed -i 's/throw new \\Symfony\\Component\\HttpKernel\\Exception\\NotFoundHtt
 RUN sed -i 's/Application::getContextDAO()->getByPath(\$contextPath)/@Application::getContextDAO()->getByPath(\$contextPath)/g' \
     /var/www/html/lib/pkp/classes/core/PKPPageRouter.php
 
+RUN php -r "echo 'APP_KEY=' . base64_encode(random_bytes(32));" > /tmp/appkey.txt && \
+    APP_KEY=$(php -r "echo base64_encode(random_bytes(32));") && \
+    sed -i "s/^app_key[ ]*=[ ]*.*/app_key = base64:$APP_KEY/" /var/www/html/config.inc.php
+
+RUN grep "^app_key" /var/www/html/config.inc.php
+
 COPY patch.php /tmp/patch.php
 RUN php /tmp/patch.php
 
