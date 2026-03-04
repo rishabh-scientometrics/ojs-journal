@@ -29,13 +29,15 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 RUN echo "SetEnvIf X-Forwarded-Proto https HTTPS=on" >> /etc/apache2/apache2.conf
 
 # Bake config directly into image
-RUN sed -i 's/^installed = .*/installed = On/' /var/www/html/config.inc.php && \
-    sed -i 's/^driver = .*/driver = postgres/' /var/www/html/config.inc.php && \
-    sed -i 's/^host = .*/host = dpg-d6iahrjuibrs73ekgr2g-a.singapore-postgres.render.com/' /var/www/html/config.inc.php && \
-    sed -i 's/^username = .*/username = ojs_database_user/' /var/www/html/config.inc.php && \
-    sed -i 's/^password = .*/password = LcwV3769J87Ef1Jfx6I9uV4p3sS4B6fd/' /var/www/html/config.inc.php && \
-    sed -i 's/^name = .*/name = ojs_database/' /var/www/html/config.inc.php && \
-    sed -i 's|^base_url = .*|base_url = https://ojs-journal-2.onrender.com|' /var/www/html/config.inc.php
+RUN sed -i 's/^installed[ ]*=[ ]*.*/installed = Off/' /var/www/html/config.inc.php && \
+    sed -i 's/^driver[ ]*=[ ]*.*/driver = postgres/' /var/www/html/config.inc.php && \
+    sed -i 's/^host[ ]*=[ ]*.*/host = dpg-d6k4h4haae7s7389lqlg-a.singapore-postgres.render.com/' /var/www/html/config.inc.php && \
+    sed -i 's/^username[ ]*=[ ]*.*/username = ojs_database_gu3v_user/' /var/www/html/config.inc.php && \
+    sed -i 's/^password[ ]*=[ ]*.*/password = ysqnHiL5VbSpz9aFKcDvL7shwVvHs1v1/' /var/www/html/config.inc.php && \
+    sed -i 's/^name[ ]*=[ ]*.*/name = ojs_database_gu3v/' /var/www/html/config.inc.php && \
+    sed -i 's|^base_url[ ]*=[ ]*.*|base_url = https://ojs-journal-2.onrender.com|' /var/www/html/config.inc.php
+
+RUN grep -E "^(installed|driver|host|username|password|name|base_url)" /var/www/html/config.inc.php | grep -v "^;" | head -10
 
 RUN mkdir -p /var/www/files /var/www/logs && \
     chown -R www-data:www-data /var/www/html /var/www/files /var/www/logs && \
