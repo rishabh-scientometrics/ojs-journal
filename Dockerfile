@@ -49,12 +49,9 @@ chmod -R 777 /var/www/html/cache /var/www/html/public /var/www/files\n\
 mkdir -p /var/www/html/cache/opcache\n\
 chmod -R 777 /var/www/html/cache/opcache\n\
 chown -R www-data:www-data /var/www/html/cache\n\
-TABLES=$(PGPASSWORD=ysqnHiL5VbSpz9aFKcDvL7shwVvHs1v1 psql -h dpg-d6k4h4haae7s7389lqlg-a.singapore-postgres.render.com -U ojs_database_gu3v_user -d ojs_database_gu3v -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='"'"'public'"'"';" 2>/dev/null | tr -d '"'"' \n'"'"')\n\
-echo "=== Tables in new DB: $TABLES ==="\n\
-echo "=== Versions table ==="\n\
-PGPASSWORD=ysqnHiL5VbSpz9aFKcDvL7shwVvHs1v1 psql -h dpg-d6k4h4haae7s7389lqlg-a.singapore-postgres.render.com -U ojs_database_gu3v_user -d ojs_database_gu3v -t -c "SELECT * FROM versions;" 2>/dev/null\n\
-echo "=== Site table ==="\n\
-PGPASSWORD=ysqnHiL5VbSpz9aFKcDvL7shwVvHs1v1 psql -h dpg-d6k4h4haae7s7389lqlg-a.singapore-postgres.render.com -U ojs_database_gu3v_user -d ojs_database_gu3v -t -c "SELECT * FROM site;" 2>/dev/null\n\
+rm -rf /var/www/html/cache/*\n\
+echo "=== installed line in config ==="\n\
+grep "^installed" /var/www/html/config.inc.php\n\
 exec apache2ctl -DFOREGROUND\n\
 ' > /entrypoint.sh && chmod +x /entrypoint.sh
 
