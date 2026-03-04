@@ -20,11 +20,8 @@ RUN sed -i 's/Application::getContextDAO()->getByPath(\$contextPath)/@Applicatio
     /var/www/html/lib/pkp/classes/core/PKPPageRouter.php
 
 COPY patch.php /tmp/patch.php
-RUN find /etc/php -name "php.ini" | xargs -I{} sh -c 'echo "error_log = /dev/stdout" >> "{}" && echo "display_errors = On" >> "{}" && echo "log_errors = On" >> "{}"'
 
-RUN echo "error_log = /dev/stdout" >> /etc/php/8.3/apache2/php.ini && \
-    echo "display_errors = On" >> /etc/php/8.3/apache2/php.ini && \
-    echo "log_errors = On" >> /etc/php/8.3/apache2/php.ini
+RUN find /etc/php -name "php.ini" | xargs -I{} sh -c 'echo "error_log = /dev/stdout" >> "{}" && echo "display_errors = On" >> "{}" && echo "log_errors = On" >> "{}"'
 
 RUN sed -i 's|ErrorLog .*|ErrorLog /dev/stdout|g' /etc/apache2/apache2.conf
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
