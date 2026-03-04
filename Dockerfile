@@ -50,8 +50,8 @@ mkdir -p /var/www/html/cache/opcache\n\
 chmod -R 777 /var/www/html/cache/opcache\n\
 chown -R www-data:www-data /var/www/html/cache\n\
 rm -rf /var/www/html/cache/*\n\
-echo "=== installed line in config ==="\n\
-grep "^installed" /var/www/html/config.inc.php\n\
+JOURNALS=$(PGPASSWORD=ysqnHiL5VbSpz9aFKcDvL7shwVvHs1v1 psql -h dpg-d6k4h4haae7s7389lqlg-a.singapore-postgres.render.com -U ojs_database_gu3v_user -d ojs_database_gu3v -t -c "SELECT count(*) FROM journals;" 2>/dev/null | tr -d '"'"' \n'"'"')\n\
+echo "=== Journals in DB: $JOURNALS ==="\n\
 exec apache2ctl -DFOREGROUND\n\
 ' > /entrypoint.sh && chmod +x /entrypoint.sh
 
