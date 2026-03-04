@@ -52,6 +52,11 @@ chown -R www-data:www-data /var/www/html/cache\n\
 rm -rf /var/www/html/cache/*\n\
 JOURNALS=$(PGPASSWORD=ysqnHiL5VbSpz9aFKcDvL7shwVvHs1v1 psql -h dpg-d6k4h4haae7s7389lqlg-a.singapore-postgres.render.com -U ojs_database_gu3v_user -d ojs_database_gu3v -t -c "SELECT count(*) FROM journals;" 2>/dev/null | tr -d '"'"' \n'"'"')\n\
 echo "=== Journals in DB: $JOURNALS ==="\n\
+if [ "$JOURNALS" = "0" ]; then\n\
+echo "=== Creating journal ==="\n\
+PGPASSWORD=ysqnHiL5VbSpz9aFKcDvL7shwVvHs1v1 psql -h dpg-d6k4h4haae7s7389lqlg-a.singapore-postgres.render.com -U ojs_database_gu3v_user -d ojs_database_gu3v -c "INSERT INTO journals (path, seq, primary_locale, enabled) VALUES ('"'"'journal'"'"', 1, '"'"'en'"'"', 1);" 2>/dev/null\n\
+echo "=== Journal created ==="\n\
+fi\n\
 exec apache2ctl -DFOREGROUND\n\
 ' > /entrypoint.sh && chmod +x /entrypoint.sh
 
