@@ -1,6 +1,6 @@
 FROM pkpofficial/ojs:3_5_0-3
 USER root
-RUN echo "cache-bust-9" > /dev/null
+RUN echo "cache-bust-10" > /dev/null
 RUN apt-get update && apt-get install -y \
     postgresql-client curl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -37,12 +37,8 @@ mkdir -p /var/www/html/cache/opcache\n\
 chmod -R 777 /var/www/html/cache/opcache\n\
 chown -R www-data:www-data /var/www/html/cache\n\
 rm -rf /var/www/html/cache/*\n\
-APP_KEY=$(PGPASSWORD=xXe4VzEuCiPa8YgMGlJubGX7MoPnFQVw psql -h dpg-d6m54lntskes73dmvqbg-a.singapore-postgres.render.com -U ojs_database_ksdd_user -d ojs_database_ksdd -t -c "SELECT setting_value FROM site_settings WHERE setting_name='"'"'app_key'"'"';" 2>/dev/null | tr -d '"'"' \n'"'"')\n\
-echo "=== App key from DB: $APP_KEY ==="\n\
-if [ -n "$APP_KEY" ]; then\n\
-sed -i "s|^app_key.*|app_key = $APP_KEY|" /var/www/html/config.inc.php\n\
-echo "=== App key set ==="\n\
-fi\n\
+echo "=== All site settings ==="\n\
+PGPASSWORD=xXe4VzEuCiPa8YgMGlJubGX7MoPnFQVw psql -h dpg-d6m54lntskes73dmvqbg-a.singapore-postgres.render.com -U ojs_database_ksdd_user -d ojs_database_ksdd -t -c "SELECT setting_name, setting_value FROM site_settings;" 2>/dev/null\n\
 exec apache2ctl -DFOREGROUND\n\
 ' > /entrypoint.sh && chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
