@@ -1,6 +1,6 @@
 FROM pkpofficial/ojs:3_5_0-3
 USER root
-RUN echo "cache-bust-7" > /dev/null
+RUN echo "cache-bust-8" > /dev/null
 RUN apt-get update && apt-get install -y \
     postgresql-client curl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -22,10 +22,10 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 RUN echo "SetEnvIf X-Forwarded-Proto https HTTPS=on" >> /etc/apache2/apache2.conf
 RUN sed -i 's/^installed[ ]*=[ ]*.*/installed = Off/' /var/www/html/config.inc.php && \
     sed -i 's/^driver[ ]*=[ ]*.*/driver = postgres/' /var/www/html/config.inc.php && \
-    sed -i 's/^host[ ]*=[ ]*.*/host = dpg-d6k4h4haae7s7389lqlg-a.singapore-postgres.render.com/' /var/www/html/config.inc.php && \
-    sed -i 's/^username[ ]*=[ ]*.*/username = ojs_database_gu3v_user/' /var/www/html/config.inc.php && \
-    sed -i 's/^password[ ]*=[ ]*.*/password = ysqnHiL5VbSpz9aFKcDvL7shwVvHs1v1/' /var/www/html/config.inc.php && \
-    sed -i 's/^name[ ]*=[ ]*.*/name = ojs_database_gu3v/' /var/www/html/config.inc.php && \
+    sed -i 's/^host[ ]*=[ ]*.*/host = dpg-d6m54lntskes73dmvqbg-a.singapore-postgres.render.com/' /var/www/html/config.inc.php && \
+    sed -i 's/^username[ ]*=[ ]*.*/username = ojs_database_ksdd_user/' /var/www/html/config.inc.php && \
+    sed -i 's/^password[ ]*=[ ]*.*/password = xXe4VzEuCiPa8YgMGlJubGX7MoPnFQVw/' /var/www/html/config.inc.php && \
+    sed -i 's/^name[ ]*=[ ]*.*/name = ojs_database_ksdd/' /var/www/html/config.inc.php && \
     sed -i 's|^base_url[ ]*=[ ]*.*|base_url = https://ojs-journal-2.onrender.com|' /var/www/html/config.inc.php
 RUN mkdir -p /var/www/files /var/www/logs && \
     chown -R www-data:www-data /var/www/html /var/www/files /var/www/logs && \
