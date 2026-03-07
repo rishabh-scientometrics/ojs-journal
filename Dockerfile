@@ -20,7 +20,7 @@ RUN find /etc/php -name "php.ini" | xargs -I{} sh -c 'echo "error_log = /dev/std
 RUN sed -i 's|ErrorLog .*|ErrorLog /dev/stdout|g' /etc/apache2/apache2.conf
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 RUN echo "SetEnvIf X-Forwarded-Proto https HTTPS=on" >> /etc/apache2/apache2.conf
-RUN sed -i 's/^installed[ ]*=[ ]*.*/installed = Off/' /var/www/html/config.inc.php && \
+RUN sed -i 's/^installed[ ]*=[ ]*.*/installed = On/' /var/www/html/config.inc.php && \
     sed -i 's/^driver[ ]*=[ ]*.*/driver = postgres/' /var/www/html/config.inc.php && \
     sed -i 's/^host[ ]*=[ ]*.*/host = dpg-d6m54lntskes73dmvqbg-a.singapore-postgres.render.com/' /var/www/html/config.inc.php && \
     sed -i 's/^username[ ]*=[ ]*.*/username = ojs_database_ksdd_user/' /var/www/html/config.inc.php && \
