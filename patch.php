@@ -1,4 +1,5 @@
 <?php
+// Fix isInstalled
 $file = '/var/www/html/lib/pkp/classes/core/PKPApplication.php';
 $content = file_get_contents($file);
 $content = preg_replace(
@@ -7,4 +8,15 @@ $content = preg_replace(
     $content
 );
 file_put_contents($file, $content);
-echo "isInstalled patched to read from config\n";
+echo "isInstalled patched\n";
+
+// Fix PubObjectsExportPlugin - remove registerSchedules method entirely
+$file2 = '/var/www/html/classes/plugins/PubObjectsExportPlugin.php';
+$content2 = file_get_contents($file2);
+$content2 = preg_replace(
+    '/public function registerSchedules\s*\(.*?\)\s*\{.*?\}/s',
+    'public function registerSchedules($scheduler) {}',
+    $content2
+);
+file_put_contents($file2, $content2);
+echo "PubObjectsExportPlugin patched\n";
