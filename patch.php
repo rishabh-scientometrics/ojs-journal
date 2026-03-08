@@ -10,12 +10,12 @@ $content = preg_replace(
 file_put_contents($file, $content);
 echo "isInstalled patched\n";
 
-// Fix PubObjectsExportPlugin
+// Fix PubObjectsExportPlugin - use correct signature
 $file2 = '/var/www/html/classes/plugins/PubObjectsExportPlugin.php';
 $content2 = file_get_contents($file2);
 $content2 = preg_replace(
     '/public function registerSchedules\s*\(.*?\)\s*\{.*?\}/s',
-    'public function registerSchedules($scheduler) {}',
+    'public function registerSchedules(PKP\\scheduledTask\\PKPScheduler $scheduler): void {}',
     $content2
 );
 file_put_contents($file2, $content2);
