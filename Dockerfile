@@ -1,6 +1,6 @@
 FROM pkpofficial/ojs:3_5_0-3
 USER root
-RUN echo "cache-bust-11" > /dev/null
+RUN echo "cache-bust-12" > /dev/null
 RUN apt-get update && apt-get install -y \
     postgresql-client curl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -15,7 +15,6 @@ RUN sed -i 's/throw new \\Symfony\\Component\\HttpKernel\\Exception\\NotFoundHtt
 RUN sed -i 's/Application::getContextDAO()->getByPath(\$contextPath)/@Application::getContextDAO()->getByPath(\$contextPath)/g' \
     /var/www/html/lib/pkp/classes/core/PKPPageRouter.php
 RUN rm -rf /var/www/html/plugins/importexport/doaj
-RUN sed -i 's/.*DOAJInfoSender.*$//' /var/www/html/classes/plugins/PubObjectsExportPlugin.php
 COPY patch.php /tmp/patch.php
 RUN php /tmp/patch.php
 RUN find /etc/php -name "php.ini" | xargs -I{} sh -c 'echo "error_log = /dev/stdout" >> "{}" && echo "display_errors = On" >> "{}" && echo "log_errors = On" >> "{}"'
@@ -28,8 +27,8 @@ RUN sed -i 's/^installed[ ]*=[ ]*.*/installed = On/' /var/www/html/config.inc.ph
     sed -i 's/^username[ ]*=[ ]*.*/username = ojs_database_ksdd_user/' /var/www/html/config.inc.php && \
     sed -i 's/^password[ ]*=[ ]*.*/password = xXe4VzEuCiPa8YgMGlJubGX7MoPnFQVw/' /var/www/html/config.inc.php && \
     sed -i 's/^name[ ]*=[ ]*.*/name = ojs_database_ksdd/' /var/www/html/config.inc.php && \
-    sed -i 's|^base_url[ ]*=[ ]*.*|base_url = https://ojs-journal-2.onrender.com|' /var/www/html/config.inc.php && \
-    sed -i 's|^app_key\s*=.*|app_key = base64:dGhpcyBpcyBleGFjdGx5IHRoaXJ0eXR3bw==|' /var/www/html/config.inc.php && \
+    sed -i 's|^base_url[ ]*=[ ]*.*|base_url = https://ojs-journal-2.onrender.com|' /var/www/html/config.inc.php
+RUN sed -i 's|^app_key.*|app_key = base64:dGhpcyBpcyBleGFjdGx5IHRoaXJ0eXR3bw==|' /var/www/html/config.inc.php
 RUN grep "app_key" /var/www/html/config.inc.php
 RUN mkdir -p /var/www/files /var/www/logs && \
     chown -R www-data:www-data /var/www/html /var/www/files /var/www/logs && \
