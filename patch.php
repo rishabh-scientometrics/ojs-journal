@@ -10,7 +10,7 @@ $content = preg_replace(
 file_put_contents($file, $content);
 echo "isInstalled patched\n";
 
-// Fix PubObjectsExportPlugin - remove registerSchedules method entirely
+// Fix PubObjectsExportPlugin
 $file2 = '/var/www/html/classes/plugins/PubObjectsExportPlugin.php';
 $content2 = file_get_contents($file2);
 $content2 = preg_replace(
