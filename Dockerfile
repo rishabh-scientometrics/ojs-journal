@@ -30,9 +30,9 @@ RUN sed -i 's/^installed[ ]*=[ ]*.*/installed = On/' /var/www/html/config.inc.ph
     sed -i 's|^base_url[ ]*=[ ]*.*|base_url = https://ojs-journal-2.onrender.com|' /var/www/html/config.inc.php
 RUN sed -i 's|^app_key.*|app_key = base64:TLxsRoEr0l8sS2IFaynE6ObjaqIWLAHSG2xZxiY7qqw=|' /var/www/html/config.inc.php
 RUN grep "app_key" /var/www/html/config.inc.php
-RUN mkdir -p /var/www/files /var/www/logs && \
-    chown -R www-data:www-data /var/www/html /var/www/files /var/www/logs && \
-    chmod -R 777 /var/www/files /var/www/logs /var/www/html/cache /var/www/html/public
+RUN mkdir -p /var/www/files /var/www/logs /usageStats/usageEventLogs && \
+    chown -R www-data:www-data /var/www/html /var/www/files /var/www/logs /usageStats && \
+    chmod -R 777 /var/www/files /var/www/logs /var/www/html/cache /var/www/html/public /usageStats
 RUN printf '#!/bin/bash\n\
 chmod -R 777 /var/www/html/cache /var/www/html/public /var/www/files\n\
 mkdir -p /var/www/html/cache/opcache\n\
