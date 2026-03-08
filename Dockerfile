@@ -29,7 +29,7 @@ RUN sed -i 's/^installed[ ]*=[ ]*.*/installed = On/' /var/www/html/config.inc.ph
     sed -i 's/^password[ ]*=[ ]*.*/password = xXe4VzEuCiPa8YgMGlJubGX7MoPnFQVw/' /var/www/html/config.inc.php && \
     sed -i 's/^name[ ]*=[ ]*.*/name = ojs_database_ksdd/' /var/www/html/config.inc.php && \
     sed -i 's|^base_url[ ]*=[ ]*.*|base_url = https://ojs-journal-2.onrender.com|' /var/www/html/config.inc.php && \
-    sed -i 's|^app_key\s*=.*|app_key = base64:Y2hhbmdlbWUxMjM0NTY3ODkwMTIzNDU2|' /var/www/html/config.inc.php
+    sed -i 's|^app_key\s*=.*|app_key = base64:dGhpcyBpcyBleGFjdGx5IHRoaXJ0eXR3bw==|' /var/www/html/config.inc.php && \
 RUN grep "app_key" /var/www/html/config.inc.php
 RUN mkdir -p /var/www/files /var/www/logs && \
     chown -R www-data:www-data /var/www/html /var/www/files /var/www/logs && \
