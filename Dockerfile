@@ -37,7 +37,6 @@ chmod -R 777 /var/www/html/cache /var/www/html/public /var/www/files /usageStats
 mkdir -p /var/www/html/cache/opcache\n\
 chmod -R 777 /var/www/html/cache/opcache\n\
 chown -R www-data:www-data /var/www/html/cache\n\
-rm -rf /var/www/html/cache/*\n\
 exec apache2ctl -DFOREGROUND\n\
 ' > /entrypoint.sh && chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
