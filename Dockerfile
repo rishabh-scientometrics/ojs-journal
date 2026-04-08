@@ -23,8 +23,8 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 RUN echo "SetEnvIf X-Forwarded-Proto https HTTPS=on" >> /etc/apache2/apache2.conf
 RUN sed -i 's/^installed[ ]*=[ ]*.*/installed = Off/' /var/www/html/config.inc.php && \
     sed -i 's/^driver[ ]*=[ ]*.*/driver = postgres/' /var/www/html/config.inc.php && \
-    sed -i 's/^host[ ]*=[ ]*.*/host = db.zoqalnmafvyuhzwroydk.supabase.co/' /var/www/html/config.inc.php && \
-    sed -i 's/^username[ ]*=[ ]*.*/username = postgres/' /var/www/html/config.inc.php && \
+    sed -i 's/^host[ ]*=[ ]*.*/host = aws-1-ap-southeast-1.pooler.supabase.com/' /var/www/html/config.inc.php && \
+    sed -i 's/^username[ ]*=[ ]*.*/username = postgres.zoqalnmafvyuhzwroydk/' /var/www/html/config.inc.php && \
     sed -i 's/^password[ ]*=[ ]*.*/password = 4R8eKxRCBi0pybyq/' /var/www/html/config.inc.php && \
     sed -i 's/^name[ ]*=[ ]*.*/name = postgres/' /var/www/html/config.inc.php && \
     sed -i 's|^base_url[ ]*=[ ]*.*|base_url = https://ojs-journal-2.onrender.com|' /var/www/html/config.inc.php
