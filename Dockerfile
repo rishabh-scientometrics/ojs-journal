@@ -1,6 +1,6 @@
 FROM pkpofficial/ojs:3_5_0-3
 USER root
-RUN echo "cache-bust-15" > /dev/null
+RUN echo "cache-bust-17" > /dev/null
 RUN apt-get update && apt-get install -y \
     postgresql-client curl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -21,20 +21,19 @@ RUN find /etc/php -name "php.ini" | xargs -I{} sh -c 'echo "error_log = /dev/std
 RUN sed -i 's|ErrorLog .*|ErrorLog /dev/stdout|g' /etc/apache2/apache2.conf
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 RUN echo "SetEnvIf X-Forwarded-Proto https HTTPS=on" >> /etc/apache2/apache2.conf
-RUN sed -i 's/^installed[ ]*=[ ]*.*/installed = On/' /var/www/html/config.inc.php && \
+RUN sed -i 's/^installed[ ]*=[ ]*.*/installed = Off/' /var/www/html/config.inc.php && \
     sed -i 's/^driver[ ]*=[ ]*.*/driver = postgres/' /var/www/html/config.inc.php && \
-    sed -i 's/^host[ ]*=[ ]*.*/host = dpg-d6m54lntskes73dmvqbg-a.singapore-postgres.render.com/' /var/www/html/config.inc.php && \
-    sed -i 's/^username[ ]*=[ ]*.*/username = ojs_database_ksdd_user/' /var/www/html/config.inc.php && \
-    sed -i 's/^password[ ]*=[ ]*.*/password = xXe4VzEuCiPa8YgMGlJubGX7MoPnFQVw/' /var/www/html/config.inc.php && \
-    sed -i 's/^name[ ]*=[ ]*.*/name = ojs_database_ksdd/' /var/www/html/config.inc.php && \
+    sed -i 's/^host[ ]*=[ ]*.*/host = db.zoqalnmafvyuhzwroydk.supabase.co/' /var/www/html/config.inc.php && \
+    sed -i 's/^username[ ]*=[ ]*.*/username = postgres/' /var/www/html/config.inc.php && \
+    sed -i 's/^password[ ]*=[ ]*.*/password = 4R8eKxRCBi0pybyq/' /var/www/html/config.inc.php && \
+    sed -i 's/^name[ ]*=[ ]*.*/name = postgres/' /var/www/html/config.inc.php && \
     sed -i 's|^base_url[ ]*=[ ]*.*|base_url = https://ojs-journal-2.onrender.com|' /var/www/html/config.inc.php
 RUN sed -i 's|^app_key.*|app_key = base64:TLxsRoEr0l8sS2IFaynE6ObjaqIWLAHSG2xZxiY7qqw=|' /var/www/html/config.inc.php
-RUN grep "app_key" /var/www/html/config.inc.php
 RUN mkdir -p /var/www/files /var/www/logs /usageStats/usageEventLogs && \
     chown -R www-data:www-data /var/www/html /var/www/files /var/www/logs /usageStats && \
     chmod -R 777 /var/www/files /var/www/logs /var/www/html/cache /var/www/html/public /usageStats
 RUN printf '#!/bin/bash\n\
-chmod -R 777 /var/www/html/cache /var/www/html/public /var/www/files\n\
+chmod -R 777 /var/www/html/cache /var/www/html/public /var/www/files /usageStats\n\
 mkdir -p /var/www/html/cache/opcache\n\
 chmod -R 777 /var/www/html/cache/opcache\n\
 chown -R www-data:www-data /var/www/html/cache\n\
